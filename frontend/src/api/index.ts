@@ -1,6 +1,6 @@
 import type { Reservation, ReservationTime, Theme } from '../types';
 
-const BASE = 'http://localhost:8080';
+const BASE = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080';
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const res = await fetch(`${BASE}${path}`, {
