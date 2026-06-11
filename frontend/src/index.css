@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #0a0a0f;
+    color: #e5e7eb;
+    font-family: 'Cinzel', serif;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #12121a;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #8b0000;
+    border-radius: 3px;
+  }
+}
+
+@layer utilities {
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@layer components {
+  .escape-card {
+    @apply bg-escape-card border border-escape-border rounded-lg transition-all duration-300;
+  }
+  .escape-card:hover {
+    @apply border-escape-red shadow-red-glow;
+  }
+
+  .btn-primary {
+    @apply bg-escape-red hover:bg-escape-red-light text-white font-cinzel font-semibold px-6 py-2 rounded transition-all duration-200;
+  }
+  .btn-primary:hover {
+    @apply shadow-red-glow;
+  }
+
+  .btn-ghost {
+    @apply border border-escape-border hover:border-escape-red text-gray-300 hover:text-white font-cinzel px-6 py-2 rounded transition-all duration-200;
+  }
+
+  .btn-danger {
+    @apply bg-transparent border border-escape-red text-escape-red hover:bg-escape-red hover:text-white font-cinzel px-4 py-1 rounded text-sm transition-all duration-200;
+  }
+
+  .input-dark {
+    @apply bg-escape-bg border border-escape-border text-gray-200 rounded px-3 py-2 w-full focus:outline-none focus:border-escape-red transition-colors duration-200;
+  }
+
+  .section-title {
+    @apply font-cinzel font-bold text-escape-gold text-2xl tracking-widest uppercase mb-6;
+  }
+}
