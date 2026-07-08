@@ -180,13 +180,13 @@ class RoomescapeApplicationTest {
     }
 
     @Test
-    void 첫번째_예약은_승인_상태이다() {
+    void 첫번째_예약은_결제_대기_상태이다() {
         int id = reserveAndGetId("zeze", "2099-06-01", 1L, 1L);
 
         RestAssured.given()
                 .when().get("/reservations/" + id)
                 .then().statusCode(200)
-                .body("state", org.hamcrest.Matchers.equalTo("승인"));
+                .body("state", org.hamcrest.Matchers.equalTo("결제 대기"));
     }
 
     @Test

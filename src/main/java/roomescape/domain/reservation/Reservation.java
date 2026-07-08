@@ -52,6 +52,14 @@ public class Reservation {
         return status == Status.WAITING;
     }
 
+    public boolean isPendingPayment() {
+        return status == Status.PENDING_PAYMENT;
+    }
+
+    public boolean occupiesSlot() {
+        return status == Status.APPROVED || status == Status.PENDING_PAYMENT;
+    }
+
     public boolean isSameName(Reservation other) {
         return name.isSame(other.name);
     }

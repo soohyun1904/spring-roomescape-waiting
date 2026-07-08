@@ -2,7 +2,8 @@ package roomescape.domain.reservation;
 
 public enum Status {
     APPROVED("승인"),
-    WAITING("대기");
+    WAITING("대기"),
+    PENDING_PAYMENT("결제 대기");
 
     private final String koreanName;
 

@@ -20,6 +20,7 @@ import roomescape.domain.reservation.Reservations;
 import roomescape.service.ReservationCreateCommand;
 import roomescape.service.ReservationService;
 import roomescape.service.ReservationUpdateCommand;
+import roomescape.service.ReservationWithOrder;
 
 import java.net.URI;
 
@@ -35,13 +36,14 @@ public class ReservationController {
     public ResponseEntity<ReservationResponse> create(
             @Valid @RequestBody ReservationCreateRequest request
     ) {
-        Reservation reservation = reservationService.reserve(ReservationCreateCommand.from(request));
+        ReservationWithOrder reserved = reservationService.reserve(ReservationCreateCommand.from(request));
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
-                .buildAndExpand(reservation.getId())
+                .buildAndExpand(reserved.getReservation().getId())
                 .toUri();
 
-        return ResponseEntity.created(location).body(ReservationResponse.toDto(reservation));
+        return ResponseEntity.created(location)
+                .body(ReservationResponse.toDto(reserved.getReservation(), reserved.getOrder()));
     }
 
     @GetMapping("/reservations")

@@ -59,7 +59,7 @@ public class JdbcReservationTimeRepository implements ReservationTimeRepository 
                     SELECT s.time_id
                     FROM slot s
                     INNER JOIN reservation r ON r.slot_id = s.id
-                    WHERE s.date = :date AND s.theme_id = :themeId AND r.status = 'APPROVED'
+                    WHERE s.date = :date AND s.theme_id = :themeId AND r.status IN ('APPROVED', 'PENDING_PAYMENT')
                 )
                 """;
         return jdbcTemplate.query(sql, params, RESERVATION_TIME_ROW_MAPPER);

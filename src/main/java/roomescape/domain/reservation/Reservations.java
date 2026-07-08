@@ -20,7 +20,7 @@ public class Reservations {
     }
 
     private Status nextStatus() {
-        return values.stream().anyMatch(Reservation::isApproved) ? Status.WAITING : Status.APPROVED;
+        return values.stream().anyMatch(Reservation::occupiesSlot) ? Status.WAITING : Status.APPROVED;
     }
 
     public void conflictByName(Reservation reservation) {
@@ -45,7 +45,7 @@ public class Reservations {
     }
 
     public Rank rankOf(Reservation reservation) {
-        if (reservation.isApproved()) {
+        if (reservation.occupiesSlot()) {
             return new Rank(0);
         }
         List<Reservation> waitings = values.stream().filter(Reservation::isWaiting).toList();

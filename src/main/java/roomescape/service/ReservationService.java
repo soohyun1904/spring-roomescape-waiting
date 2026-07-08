@@ -2,6 +2,8 @@ package roomescape.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.domain.payment.PaymentOrder;
+import roomescape.domain.payment.PaymentOrderRepository;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationRepository;
 import roomescape.domain.reservation.Reservations;
@@ -17,25 +19,37 @@ public class ReservationService {
     private final Clock clock;
     private final ReservationAssembler assembler;
     private final ReservationRepository reservationRepository;
+    private final PaymentOrderRepository paymentOrderRepository;
 
     public ReservationService(
             Clock clock,
             ReservationAssembler assembler,
-            ReservationRepository reservationRepository
+            ReservationRepository reservationRepository,
+            PaymentOrderRepository paymentOrderRepository
     ) {
         this.clock = clock;
         this.assembler = assembler;
         this.reservationRepository = reservationRepository;
+        this.paymentOrderRepository = paymentOrderRepository;
     }
 
     @Transactional
-    public Reservation reserve(ReservationCreateCommand command) {
+    public ReservationWithOrder reserve(ReservationCreateCommand command) {
         Reservation assembled = assembler.from(command);
         Slot slot = assembled.getSlot();
 
         Reservations existing = reservationRepository.findBySlotId(slot.getId());
         Reservation join = existing.join(assembled);
-        return reservationRepository.save(join);
+        if (!join.isApproved()) {
+            return ReservationWithOrder.withoutOrder(reservationRepository.save(join));
+        }
+
+        // 슬롯을 선점한 예약은 결제 승인이 완료되어야 확정(APPROVED)된다.
+        // 금액은 클라이언트 입력이 아니라 서버가 테마 가격으로 확정하며, 이후 금액 위변조 검증의 원본이 된다.
+        Reservation pending = reservationRepository.save(join.withStatus(Status.PENDING_PAYMENT));
+        PaymentOrder order = paymentOrderRepository.save(
+                PaymentOrder.create(pending.getId(), slot.getTheme().getPrice().getValue()));
+        return new ReservationWithOrder(pending, order);
     }
 
     public Reservation find(long id) {
@@ -62,7 +76,7 @@ public class ReservationService {
         reservationRepository.update(id, updated);
 
         boolean slotChanged = !existing.getSlotId().equals(newSlot.getId());
-        if (slotChanged && existing.isApproved()) {
+        if (slotChanged && existing.occupiesSlot()) {
             promoteFirstWaiting(existing.getSlotId());
         }
 
@@ -79,7 +93,7 @@ public class ReservationService {
 
         reservationRepository.deleteById(reservationId);
 
-        if (reservation.isApproved()) {
+        if (reservation.occupiesSlot()) {
             promoteFirstWaiting(reservation.getSlotId());
         }
     }

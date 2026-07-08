@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS payment_order;
 DROP TABLE IF EXISTS reservation;
 DROP TABLE IF EXISTS slot;
 DROP TABLE IF EXISTS reservation_time;
@@ -37,9 +38,22 @@ CREATE TABLE reservation
     id         BIGINT      NOT NULL AUTO_INCREMENT,
     slot_id    BIGINT      NOT NULL,
     name       VARCHAR(20) NOT NULL,
-    status     VARCHAR(10) NOT NULL DEFAULT 'APPROVED',
+    status     VARCHAR(20) NOT NULL DEFAULT 'APPROVED',
     created_at TIMESTAMP            DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
     FOREIGN KEY (slot_id) REFERENCES slot (id),
     CONSTRAINT uq_reservation UNIQUE (slot_id, name)
+);
+
+CREATE TABLE payment_order
+(
+    id             BIGINT      NOT NULL AUTO_INCREMENT,
+    order_id       VARCHAR(64) NOT NULL,
+    reservation_id BIGINT      NOT NULL,
+    amount         BIGINT      NOT NULL,
+    payment_key    VARCHAR(200),
+    created_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    FOREIGN KEY (reservation_id) REFERENCES reservation (id) ON DELETE CASCADE,
+    CONSTRAINT uq_payment_order_order_id UNIQUE (order_id)
 );
