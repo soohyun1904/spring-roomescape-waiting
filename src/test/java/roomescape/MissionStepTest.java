@@ -24,7 +24,7 @@ public class MissionStepTest {
     void init() {
         jdbcTemplate.update("insert into reservation_time(start_at) values ('10:00')");
         jdbcTemplate.update(
-                "insert into theme(name, description, thumbnail_url) values ('공포', '무서워요', 'https://zeze.com')");
+                "insert into theme(name, description, thumbnail_url, price) values ('공포', '무서워요', 'https://zeze.com', 10000)");
     }
 
     @Test

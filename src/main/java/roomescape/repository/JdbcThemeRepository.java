@@ -19,9 +19,10 @@ public class JdbcThemeRepository implements ThemeRepository {
             Theme.load(rs.getLong("id"),
                     rs.getString("name"),
                     rs.getString("description"),
-                    rs.getString("thumbnail_url"));
+                    rs.getString("thumbnail_url"),
+                    rs.getLong("price"));
 
-    private static final String BASE_SQL = "SELECT id, name, description, thumbnail_url FROM THEME";
+    private static final String BASE_SQL = "SELECT id, name, description, thumbnail_url, price FROM THEME";
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -37,7 +38,8 @@ public class JdbcThemeRepository implements ThemeRepository {
         Map<String, Object> params = Map.of(
                 "name", theme.getName().getValue(),
                 "description", theme.getDescription(),
-                "thumbnail_url", theme.getThumbnailUrl().getValue()
+                "thumbnail_url", theme.getThumbnailUrl().getValue(),
+                "price", theme.getPrice().getValue()
         );
 
         long generatedKey = simpleJdbcInsert.executeAndReturnKey(params).longValue();
@@ -53,7 +55,7 @@ public class JdbcThemeRepository implements ThemeRepository {
         LocalDate endDate = date.minusDays(1);
 
         String sql = """
-                SELECT t.id, t.name, t.description, t.thumbnail_url
+                SELECT t.id, t.name, t.description, t.thumbnail_url, t.price
                 FROM THEME AS t
                 INNER JOIN (
                     SELECT theme_id, count(theme_id) AS cnt

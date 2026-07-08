@@ -18,6 +18,7 @@ import roomescape.domain.reservation.SlotRepository;
 import roomescape.domain.reservation.Status;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.ThemeName;
+import roomescape.domain.theme.ThemePrice;
 import roomescape.domain.theme.ThemeRepository;
 import roomescape.domain.theme.ThumbnailUrl;
 
@@ -66,7 +67,7 @@ class ReservationRepositoryTest {
     }
 
     private Theme givenTheme(String name) {
-        return themeRepository.save(Theme.create(new ThemeName(name), "테스트 테마 입니다.", new ThumbnailUrl("https://test.com")));
+        return themeRepository.save(Theme.create(new ThemeName(name), "테스트 테마 입니다.", new ThumbnailUrl("https://test.com"), new ThemePrice(10000L)));
     }
 
     private Slot givenSlot(ReservationDate date, ReservationTime time, Theme theme) {

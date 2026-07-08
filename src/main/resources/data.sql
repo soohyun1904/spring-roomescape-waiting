@@ -23,19 +23,19 @@ INSERT INTO RESERVATION_TIME (start_at)
 VALUES ('20:00');
 
 -- THEME: 5개
-INSERT INTO THEME (name, description, thumbnail_url)
-VALUES ('공포의 저택', '으스스한 저택에서 탈출하세요', 'https://img.khan.co.kr/news/2021/12/31/l_2022010101000053900351432.jpg');
-INSERT INTO THEME (name, description, thumbnail_url)
-VALUES ('우주 탐험', '광활한 우주의 비밀을 풀어보세요', 'https://imagescdn.gettyimagesbank.com/500/201801/jv11110379.jpg');
-INSERT INTO THEME (name, description, thumbnail_url)
+INSERT INTO THEME (name, description, thumbnail_url, price)
+VALUES ('공포의 저택', '으스스한 저택에서 탈출하세요', 'https://img.khan.co.kr/news/2021/12/31/l_2022010101000053900351432.jpg', 35000);
+INSERT INTO THEME (name, description, thumbnail_url, price)
+VALUES ('우주 탐험', '광활한 우주의 비밀을 풀어보세요', 'https://imagescdn.gettyimagesbank.com/500/201801/jv11110379.jpg', 40000);
+INSERT INTO THEME (name, description, thumbnail_url, price)
 VALUES ('마법 학교', '마법 학교의 숨겨진 비밀을 찾아라',
-        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRHtPE2r2OnsA7PLT22YBX4EWbmWXcDDDyPcw&s');
-INSERT INTO THEME (name, description, thumbnail_url)
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRHtPE2r2OnsA7PLT22YBX4EWbmWXcDDDyPcw&s', 30000);
+INSERT INTO THEME (name, description, thumbnail_url, price)
 VALUES ('고대 유적', '고대 문명의 유적을 탐험하세요',
-        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTbfoc4tfrkbUaKHBGhvdiTtoyzUmh3YNRsuw&s');
-INSERT INTO THEME (name, description, thumbnail_url)
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTbfoc4tfrkbUaKHBGhvdiTtoyzUmh3YNRsuw&s', 45000);
+INSERT INTO THEME (name, description, thumbnail_url, price)
 VALUES ('탐정 사무소', '미스터리 사건을 해결하세요',
-        'https://img.freepik.com/free-photo/private-detective-empty-workplace-with-crime-case-evidences-board-hanging-desk-police-investigator-office-surrounded-with-murder-scene-photos-clues-night-time_482257-59756.jpg?semt=ais_hybrid&w=740&q=80');
+        'https://img.freepik.com/free-photo/private-detective-empty-workplace-with-crime-case-evidences-board-hanging-desk-police-investigator-office-surrounded-with-murder-scene-photos-clues-night-time_482257-59756.jpg?semt=ais_hybrid&w=740&q=80', 25000);
 
 -- SLOT: 고유한 (date, time_id, theme_id) 조합 30개
 -- theme_id=1

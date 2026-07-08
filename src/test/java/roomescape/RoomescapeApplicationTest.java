@@ -30,9 +30,9 @@ class RoomescapeApplicationTest {
         RestAssured.port = port;
         jdbcTemplate.update("insert into reservation_time(start_at) values ('10:00')");
         jdbcTemplate.update(
-                "insert into theme(name, description, thumbnail_url) values ('공포', '무서워요', 'https://zeze.com')");
+                "insert into theme(name, description, thumbnail_url, price) values ('공포', '무서워요', 'https://zeze.com', 10000)");
         jdbcTemplate.update(
-                "insert into theme(name, description, thumbnail_url) values ('개그', '재밌어요', 'https://zeze.com')");
+                "insert into theme(name, description, thumbnail_url, price) values ('개그', '재밌어요', 'https://zeze.com', 10000)");
     }
 
     @Test

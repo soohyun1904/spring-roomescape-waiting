@@ -24,7 +24,8 @@ public class JdbcSlotRepository implements SlotRepository {
                 rs.getLong("theme_id"),
                 rs.getString("theme_name"),
                 rs.getString("theme_description"),
-                rs.getString("theme_thumbnail_url"));
+                rs.getString("theme_thumbnail_url"),
+                rs.getLong("theme_price"));
         return Slot.load(
                 rs.getLong("slot_id"),
                 rs.getDate("slot_date").toLocalDate(),
@@ -39,7 +40,8 @@ public class JdbcSlotRepository implements SlotRepository {
                    t.id            AS theme_id,
                    t.name          AS theme_name,
                    t.description   AS theme_description,
-                   t.thumbnail_url AS theme_thumbnail_url
+                   t.thumbnail_url AS theme_thumbnail_url,
+                   t.price         AS theme_price
             FROM slot s
             INNER JOIN reservation_time rt ON s.time_id  = rt.id
             INNER JOIN theme             t  ON s.theme_id = t.id

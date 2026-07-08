@@ -42,7 +42,7 @@ class ReservationServiceTest {
             1L,
             LocalDate.of(2099, 1, 1),
             ReservationTime.load(1L, LocalTime.of(10, 0)),
-            Theme.load(1L, "any", "any", URL)
+            Theme.load(1L, "any", "any", URL, 10000L)
     );
     private static final Reservation DUMMY = Reservation.load(1L, NAME, "APPROVED", DUMMY_SLOT);
     private static final Reservations DUMMIES = new Reservations(List.of(DUMMY));
@@ -148,7 +148,7 @@ class ReservationServiceTest {
     @Test
     void 예약_수정시_사용_불가능한_날짜가_들어오면_예외가_발생한다() {
         ReservationTime reservationTime = ReservationTime.load(1L, LocalTime.parse("11:00"));
-        Theme theme = Theme.load(1L, "any", "any", URL);
+        Theme theme = Theme.load(1L, "any", "any", URL, 10000L);
         Slot newSlot = Slot.load(2L, LocalDate.parse("2099-04-06"), reservationTime, theme);
         ReservationUpdateRequest request = new ReservationUpdateRequest("zeze", LocalDate.parse("2099-04-06"), 1L, 1L);
 
@@ -168,7 +168,7 @@ class ReservationServiceTest {
         String name = "zeze";
 
         ReservationTime time = ReservationTime.load(timeId, LocalTime.of(10, 0));
-        Theme theme = Theme.load(themeId, "any", "any", URL);
+        Theme theme = Theme.load(themeId, "any", "any", URL, 10000L);
         Slot slot = Slot.load(1L, LocalDate.of(2099, 1, 1), time, theme);
         Reservation existing = Reservation.load(1L, name, "APPROVED", slot);
 
@@ -236,7 +236,7 @@ class ReservationServiceTest {
 
     @Test
     void 승인된_예약의_슬롯_변경_시_기존_슬롯의_첫_번째_대기자가_승급된다() {
-        Slot newSlot = Slot.load(2L, LocalDate.of(2099, 6, 1), ReservationTime.load(1L, LocalTime.of(11, 0)), Theme.load(1L, "any", "any", URL));
+        Slot newSlot = Slot.load(2L, LocalDate.of(2099, 6, 1), ReservationTime.load(1L, LocalTime.of(11, 0)), Theme.load(1L, "any", "any", URL, 10000L));
         Reservation existing = Reservation.load(1L, NAME, "APPROVED", DUMMY_SLOT);
         Reservation waitingInOldSlot = Reservation.load(3L, "대기자", "WAITING", DUMMY_SLOT);
 
@@ -314,7 +314,7 @@ class ReservationServiceTest {
                 1L,
                 LocalDate.of(2099, 1, 1),
                 ReservationTime.load(1L, LocalTime.of(10, 0)),
-                Theme.load(1L, "any", "any", URL)
+                Theme.load(1L, "any", "any", URL, 10000L)
         );
         Reservation approved = Reservation.load(1L, NAME, "APPROVED", waitingSlot);
         Reservation waiting = Reservation.load(2L, "대기자", "WAITING", waitingSlot);

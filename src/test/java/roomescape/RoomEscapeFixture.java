@@ -8,6 +8,7 @@ import roomescape.domain.reservation.Slot;
 import roomescape.domain.reservation.Status;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.ThemeName;
+import roomescape.domain.theme.ThemePrice;
 import roomescape.domain.theme.ThumbnailUrl;
 
 import java.time.Clock;
@@ -24,7 +25,7 @@ public class RoomEscapeFixture {
     private static final ReservationName NAME = new ReservationName("zeze");
     private static final ReservationDate DATE = new ReservationDate(LocalDate.of(2099, 11, 11));
     private static final ReservationTime TIME = ReservationTime.create(LocalTime.of(10, 0));
-    private static final Theme THEME = Theme.create(new ThemeName("공포"), "무서워요", new ThumbnailUrl("https://zeze.com"));
+    private static final Theme THEME = Theme.create(new ThemeName("공포"), "무서워요", new ThumbnailUrl("https://zeze.com"), new ThemePrice(10000L));
 
     public static Slot slot() {
         return Slot.load(1L, DATE.getDate(), TIME, THEME);

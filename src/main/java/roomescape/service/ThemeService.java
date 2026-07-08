@@ -8,6 +8,7 @@ import roomescape.domain.RoomEscapeException;
 import roomescape.domain.reservation.SlotRepository;
 import roomescape.domain.theme.Theme;
 import roomescape.domain.theme.ThemeName;
+import roomescape.domain.theme.ThemePrice;
 import roomescape.domain.theme.ThemeRepository;
 import roomescape.domain.theme.ThumbnailUrl;
 
@@ -36,7 +37,8 @@ public class ThemeService {
         Theme theme = Theme.create(
                 new ThemeName(request.getName()),
                 request.getDescription(),
-                new ThumbnailUrl(request.getThumbnailUrl())
+                new ThumbnailUrl(request.getThumbnailUrl()),
+                new ThemePrice(request.getPrice())
         );
 
         return themeRepository.save(theme);

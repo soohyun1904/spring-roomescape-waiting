@@ -7,17 +7,19 @@ public class ThemeResponse {
     private final String name;
     private final String description;
     private final String thumbnailUrl;
+    private final long price;
 
-    public ThemeResponse(long id, String name, String description, String thumbnailUrl) {
+    public ThemeResponse(long id, String name, String description, String thumbnailUrl, long price) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.thumbnailUrl = thumbnailUrl;
+        this.price = price;
     }
 
     public static ThemeResponse toDto(Theme theme) {
         return new ThemeResponse(theme.getId(), theme.getName().getValue(), theme.getDescription(),
-                theme.getThumbnailUrl().getValue());
+                theme.getThumbnailUrl().getValue(), theme.getPrice().getValue());
     }
 
     public long getId() {
@@ -34,5 +36,9 @@ public class ThemeResponse {
 
     public String getThumbnailUrl() {
         return thumbnailUrl;
+    }
+
+    public long getPrice() {
+        return price;
     }
 }

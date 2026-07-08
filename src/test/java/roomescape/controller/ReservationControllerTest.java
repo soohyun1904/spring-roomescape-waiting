@@ -46,14 +46,14 @@ class ReservationControllerTest {
 
     private Reservation approvedReservation() {
         ReservationTime time = ReservationTime.load(1L, LocalTime.of(10, 0));
-        Theme theme = Theme.load(1L, "공포", "무서워요", "https://zeze.com");
+        Theme theme = Theme.load(1L, "공포", "무서워요", "https://zeze.com", 10000L);
         Slot slot = Slot.load(1L, LocalDate.of(2099, 1, 1), time, theme);
         return Reservation.load(1L, "zeze", "APPROVED", slot);
     }
 
     private Reservation waitingReservation() {
         ReservationTime time = ReservationTime.load(1L, LocalTime.of(10, 0));
-        Theme theme = Theme.load(1L, "공포", "무서워요", "https://zeze.com");
+        Theme theme = Theme.load(1L, "공포", "무서워요", "https://zeze.com", 10000L);
         Slot slot = Slot.load(1L, LocalDate.of(2099, 1, 1), time, theme);
         return Reservation.load(2L, "mingu", "WAITING", slot);
     }

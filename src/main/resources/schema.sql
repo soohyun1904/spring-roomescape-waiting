@@ -9,6 +9,7 @@ CREATE TABLE theme
     name          VARCHAR(20)  NOT NULL,
     description   VARCHAR(255) NOT NULL,
     thumbnail_url VARCHAR(255) NOT NULL,
+    price         BIGINT       NOT NULL,
     PRIMARY KEY (id)
 );
 

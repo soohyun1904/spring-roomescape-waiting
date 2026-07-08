@@ -11,24 +11,26 @@ public class Theme {
     private final ThemeName name;
     private final String description;
     private final ThumbnailUrl thumbnailUrl;
+    private final ThemePrice price;
 
-    private Theme(Long id, ThemeName name, String description, ThumbnailUrl thumbnailUrl) {
+    private Theme(Long id, ThemeName name, String description, ThumbnailUrl thumbnailUrl, ThemePrice price) {
         this.id = id;
         this.name = requireNonNull(name, INVALID_INPUT, "테마 이름은 비어있을 수 없습니다.");
         this.description = requireNonBlank(description, INVALID_INPUT, "테마 설명은 비어있을 수 없습니다.");
         this.thumbnailUrl = requireNonNull(thumbnailUrl, INVALID_INPUT, "테마 섬네일 URL은 비어있을 수 없습니다.");
+        this.price = requireNonNull(price, INVALID_INPUT, "테마 가격은 비어있을 수 없습니다.");
     }
 
-    public static Theme load(Long id, String name, String description, String thumbnailUrl) {
-        return new Theme(id, new ThemeName(name), description, new ThumbnailUrl(thumbnailUrl));
+    public static Theme load(Long id, String name, String description, String thumbnailUrl, Long price) {
+        return new Theme(id, new ThemeName(name), description, new ThumbnailUrl(thumbnailUrl), new ThemePrice(price));
     }
 
-    public static Theme create(ThemeName name, String description, ThumbnailUrl thumbnailUrl) {
-        return new Theme(null, name, description, thumbnailUrl);
+    public static Theme create(ThemeName name, String description, ThumbnailUrl thumbnailUrl, ThemePrice price) {
+        return new Theme(null, name, description, thumbnailUrl, price);
     }
 
     public Theme withId(Long generatedKey) {
-        return new Theme(generatedKey, name, description, thumbnailUrl);
+        return new Theme(generatedKey, name, description, thumbnailUrl, price);
     }
 
     public Long getId() {
@@ -45,6 +47,10 @@ public class Theme {
 
     public ThumbnailUrl getThumbnailUrl() {
         return thumbnailUrl;
+    }
+
+    public ThemePrice getPrice() {
+        return price;
     }
 
     @Override

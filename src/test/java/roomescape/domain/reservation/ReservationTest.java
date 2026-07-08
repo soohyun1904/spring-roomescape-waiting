@@ -14,7 +14,7 @@ public class ReservationTest {
 
     private Slot validSlot() {
         ReservationTime time = ReservationTime.load(1L, LocalTime.of(10, 0));
-        Theme theme = Theme.load(1L, "공포의 방", "설명", "https://zeze.com/thumb.jpg");
+        Theme theme = Theme.load(1L, "공포의 방", "설명", "https://zeze.com/thumb.jpg", 10000L);
         return Slot.load(1L, LocalDate.of(2099, 1, 1), time, theme);
     }
 
