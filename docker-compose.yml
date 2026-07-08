@@ -5,12 +5,15 @@ services:
       - "8080:8080"
     environment:
       - TZ=Asia/Seoul
+      - TOSS_SECRET_KEY=${TOSS_SECRET_KEY:-}
+      - TOSS_CLIENT_KEY=${TOSS_CLIENT_KEY:-}
 
-  frontend:
-    image: dalsu1904/spring-roomescape-member-front:latest
-    ports:
-      - "4173:4173"
-    environment:
-      - TZ=Asia/Seoul
-    depends_on:
-      - backend
+# 제공 프론트 이미지는 사용하지 않는다 — 저장소 상위의 frontend/(React)를 로컬에서 직접 실행한다. (README 참고)
+#  frontend:
+#    image: dalsu1904/spring-roomescape-member-front:latest
+#    ports:
+#      - "4173:4173"
+#    environment:
+#      - TZ=Asia/Seoul
+#    depends_on:
+#      - backend

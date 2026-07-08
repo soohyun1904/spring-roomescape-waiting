@@ -2,19 +2,44 @@
 
 ## 실행 가이드
 
-> Docker가 설치되어 있어야 합니다.
+### 1. 토스페이먼츠 테스트 키 설정
+
+[토스페이먼츠 개발자센터](https://developers.tosspayments.com/)에서 테스트 키를 발급받아 환경변수로 설정합니다.
+테스트 키(`test_sk_...`, `test_ck_...`)만 사용하므로 실제 출금은 발생하지 않습니다.
+**시크릿 키는 절대 저장소에 커밋하지 않습니다** — `application.properties`는 `${TOSS_SECRET_KEY:}` 형태로 환경변수만 참조합니다.
 
 ```bash
-docker-compose up
+export TOSS_SECRET_KEY=test_sk_xxxxxxxxxxxxxxxxxxxxxxxx
+export TOSS_CLIENT_KEY=test_ck_xxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
-| 서비스   | URL                   |
-|-------|-----------------------|
-| 백엔드   | http://localhost:8080 |
-| 프론트엔드 | http://localhost:4173 |
+### 2. 백엔드 실행 — http://localhost:8080
 
-- 백엔드는 레포지터리 소스를 기반으로 직접 빌드됩니다.
-- 프론트엔드는 Docker Hub(`alstj2384/roomescape-frontend:latest`)에서 이미지를 pull합니다!
+```bash
+./gradlew bootRun
+```
+
+(Docker를 쓰려면 위 환경변수를 설정한 뒤 `docker-compose up` — 백엔드만 기동됩니다.)
+
+### 3. 프론트엔드 실행 — http://localhost:4173
+
+저장소 상위 디렉토리의 `frontend/`(React + Vite)를 사용합니다. 제공 프론트 이미지는 사용하지 않습니다.
+
+```bash
+cd ../frontend
+npm install
+npm run dev
+```
+
+프론트 dev 서버가 `/api` 요청을 백엔드(`http://localhost:8080`)로 프록시합니다.
+
+### 4. 결제 흐름 확인
+
+1. http://localhost:4173 → 예약 페이지에서 이름/테마/날짜/시간을 선택해 예약 신청
+2. 예약이 `결제 대기` 상태로 생성되고(서버가 orderId·금액 확정) 결제 페이지로 이동
+3. 토스 결제위젯에서 결제 진행 — 테스트 환경이므로 실제 출금 없음
+4. 인증 성공 → success 페이지가 백엔드 `POST /payments/confirm` 호출 → 예약이 `승인`으로 확정
+5. 결제 실패/취소 시 fail 페이지가 정리 API를 호출해 결제 대기 예약을 정리
 
 ---
 
@@ -53,6 +78,16 @@ docker-compose up
 
 - [x] 사용자의 예약과 대기가 상태로 구분되어 함께 표시된다.
 - [x] 대기에는 본인의 대기 순번도 함께 보여준다.
+
+### 결제 (토스페이먼츠 연동)
+
+- [x] 예약 생성 시 서버가 orderId(6~64자, 영숫자/`-`/`_`)를 생성하고 테마 가격으로 결제 금액을 확정해 주문을 저장한다.
+- [x] 슬롯을 선점한 예약은 `결제 대기` 상태로 생성되고, 결제 승인이 성공해야 `승인`으로 확정된다.
+- [x] 승인 요청 시 저장된 주문 금액과 요청 금액을 대조해 금액 위변조를 게이트웨이 호출 전에 차단한다.
+- [x] 토스 에러 코드를 도메인 예외로 매핑해 상황별 상태코드/메시지로 응답한다(미정의 코드는 기본 예외 폴백).
+- [x] 이미 승인된 결제의 중복 승인 요청(success 페이지 새로고침)은 성공과 동일하게 응답한다(멱등).
+- [x] 결제 실패/취소 시 결제 대기 주문과 예약을 정리하고 첫 대기자를 승격한다(orderId 없는 취소도 안전).
+- [x] `PaymentService`와 도메인 계층은 토스에 의존하지 않는다(포트 & 어댑터).
 
 ### 에러 응답
 
