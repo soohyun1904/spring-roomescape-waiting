@@ -5,12 +5,20 @@
 ### 1. 토스페이먼츠 테스트 키 설정
 
 [토스페이먼츠 개발자센터](https://developers.tosspayments.com/)에서 테스트 키를 발급받아 환경변수로 설정합니다.
-테스트 키(`test_sk_...`, `test_ck_...`)만 사용하므로 실제 출금은 발생하지 않습니다.
+테스트 키만 사용하므로 실제 출금은 발생하지 않습니다.
 **시크릿 키는 절대 저장소에 커밋하지 않습니다** — `application.properties`는 `${TOSS_SECRET_KEY:}` 형태로 환경변수만 참조합니다.
 
 ```bash
 export TOSS_SECRET_KEY=test_sk_xxxxxxxxxxxxxxxxxxxxxxxx
 export TOSS_CLIENT_KEY=test_ck_xxxxxxxxxxxxxxxxxxxxxxxx
+```
+
+개인 키 발급 없이 바로 돌려보려면 토스 문서에 공개된 결제위젯용 테스트 키 쌍을 사용해도 됩니다
+(문서 공개 키라 저장소에 적어도 무방하며, 이 키로 백엔드 ↔ 실제 토스 API 인증·승인 호출이 동작함을 확인했습니다):
+
+```bash
+export TOSS_CLIENT_KEY=test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm
+export TOSS_SECRET_KEY=test_gsk_docs_OaPz8L5KdmQXkzRz3y47BMw6
 ```
 
 ### 2. 백엔드 실행 — http://localhost:8080
@@ -40,6 +48,12 @@ npm run dev
 3. 토스 결제위젯에서 결제 진행 — 테스트 환경이므로 실제 출금 없음
 4. 인증 성공 → success 페이지가 백엔드 `POST /payments/confirm` 호출 → 예약이 `승인`으로 확정
 5. 결제 실패/취소 시 fail 페이지가 정리 API를 호출해 결제 대기 예약을 정리
+
+수동 테스트 팁:
+
+- 테스트 환경이라도 **결제 수단의 인증창은 실물**입니다 — 카드 결제는 카드사 창(본인 인증), 네이버페이는 네이버 로그인이 필요합니다. 본인이 쓰기 편한 수단으로 진행하세요(출금은 되지 않음).
+- 승인 완료 후 success 페이지에서 **새로고침**을 해보면 `ALREADY_PROCESSED_PAYMENT` 멱등 처리를 직접 확인할 수 있습니다(에러 대신 동일한 완료 화면).
+- 결제창을 **X로 닫으면** fail 페이지로 이동해 결제 대기 예약이 정리되는 것을 확인할 수 있습니다(`PAY_PROCESS_CANCELED`, orderId 없음 → null 가드).
 
 ---
 
