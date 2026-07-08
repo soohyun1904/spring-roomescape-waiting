@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.common.exception.ExceptionType;
 import roomescape.domain.RoomEscapeException;
+import roomescape.domain.payment.PaymentKeyConfigurationException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -24,6 +25,14 @@ public class GlobalExceptionHandler {
     public ProblemDetail roomEscapeExceptionHandle(RoomEscapeException e) {
         log.info("도메인 관련 오류가 발생했습니다.", e);
         return ProblemDetail.forStatusAndDetail(ExceptionType.resolveStatus(e.code()), e.getMessage());
+    }
+
+    @ExceptionHandler(PaymentKeyConfigurationException.class)
+    public ProblemDetail paymentKeyConfigurationExceptionHandle(PaymentKeyConfigurationException e) {
+        // 사용자 잘못이 아닌 서버 측 결제 키 설정 오류 — 운영 알람 대상 (ERROR 레벨 로그)
+        log.error("결제 API 키 설정 오류가 발생했습니다.", e);
+        return ProblemDetail.forStatusAndDetail(
+                ExceptionType.resolveStatus(e.code()), "결제 설정 오류가 발생했습니다. 관리자에게 문의해주세요.");
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
