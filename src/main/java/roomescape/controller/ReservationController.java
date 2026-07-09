@@ -18,9 +18,9 @@ import roomescape.controller.dto.response.ReservationResponses;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.Reservations;
 import roomescape.service.ReservationCreateCommand;
+import roomescape.service.ReservationOutcome;
 import roomescape.service.ReservationService;
 import roomescape.service.ReservationUpdateCommand;
-import roomescape.service.ReservationWithOrder;
 
 import java.net.URI;
 
@@ -36,14 +36,18 @@ public class ReservationController {
     public ResponseEntity<ReservationResponse> create(
             @Valid @RequestBody ReservationCreateRequest request
     ) {
-        ReservationWithOrder reserved = reservationService.reserve(ReservationCreateCommand.from(request));
+        ReservationOutcome outcome = reservationService.reserve(ReservationCreateCommand.from(request));
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
-                .buildAndExpand(reserved.getReservation().getId())
+                .buildAndExpand(outcome.reservation().getId())
                 .toUri();
 
-        return ResponseEntity.created(location)
-                .body(ReservationResponse.toDto(reserved.getReservation(), reserved.getOrder()));
+        ReservationResponse body = switch (outcome) {
+            case ReservationOutcome.PaymentRequired(Reservation reservation, var order) ->
+                    ReservationResponse.toDto(reservation, order);
+            case ReservationOutcome.Joined(Reservation reservation) -> ReservationResponse.toDto(reservation);
+        };
+        return ResponseEntity.created(location).body(body);
     }
 
     @GetMapping("/reservations")

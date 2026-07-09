@@ -34,14 +34,14 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationWithOrder reserve(ReservationCreateCommand command) {
+    public ReservationOutcome reserve(ReservationCreateCommand command) {
         Reservation assembled = assembler.from(command);
         Slot slot = assembled.getSlot();
 
         Reservations existing = reservationRepository.findBySlotId(slot.getId());
         Reservation join = existing.join(assembled);
         if (!join.isApproved()) {
-            return ReservationWithOrder.withoutOrder(reservationRepository.save(join));
+            return new ReservationOutcome.Joined(reservationRepository.save(join));
         }
 
         // 슬롯을 선점한 예약은 결제 승인이 완료되어야 확정(APPROVED)된다.
@@ -49,7 +49,7 @@ public class ReservationService {
         Reservation pending = reservationRepository.save(join.withStatus(Status.PENDING_PAYMENT));
         PaymentOrder order = paymentOrderRepository.save(
                 PaymentOrder.create(pending.getId(), slot.getTheme().getPrice().getValue()));
-        return new ReservationWithOrder(pending, order);
+        return new ReservationOutcome.PaymentRequired(pending, order);
     }
 
     public Reservation find(long id) {

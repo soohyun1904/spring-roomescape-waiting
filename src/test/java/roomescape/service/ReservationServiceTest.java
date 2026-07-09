@@ -118,13 +118,15 @@ class ReservationServiceTest {
         given(reservationRepository.save(any())).willAnswer(invocation -> ((Reservation) invocation.getArgument(0)).withId(10L));
         given(paymentOrderRepository.save(any())).willAnswer(invocation -> ((PaymentOrder) invocation.getArgument(0)).withId(1L));
 
-        ReservationWithOrder result = reservationService.reserve(
+        ReservationOutcome outcome = reservationService.reserve(
                 ReservationCreateCommand.from(new ReservationCreateRequest("zeze", LocalDate.parse("2099-04-05"), 1L, 1L)));
 
-        Assertions.assertThat(result.getReservation().getStatus()).isEqualTo(Status.PENDING_PAYMENT);
-        Assertions.assertThat(result.getOrder().getAmount()).isEqualTo(10000L);
-        Assertions.assertThat(result.getOrder().getOrderId()).matches("[a-zA-Z0-9_-]{6,64}");
-        Assertions.assertThat(result.getOrder().getReservationId()).isEqualTo(10L);
+        Assertions.assertThat(outcome).isInstanceOf(ReservationOutcome.PaymentRequired.class);
+        ReservationOutcome.PaymentRequired required = (ReservationOutcome.PaymentRequired) outcome;
+        Assertions.assertThat(required.reservation().getStatus()).isEqualTo(Status.PENDING_PAYMENT);
+        Assertions.assertThat(required.order().getAmount()).isEqualTo(10000L);
+        Assertions.assertThat(required.order().getOrderId()).matches("[a-zA-Z0-9_-]{6,64}");
+        Assertions.assertThat(required.order().getReservationId()).isEqualTo(10L);
     }
 
     @Test
@@ -134,11 +136,11 @@ class ReservationServiceTest {
         given(reservationRepository.findBySlotId(1L)).willReturn(DUMMIES);
         given(reservationRepository.save(any())).willAnswer(invocation -> ((Reservation) invocation.getArgument(0)).withId(11L));
 
-        ReservationWithOrder result = reservationService.reserve(
+        ReservationOutcome outcome = reservationService.reserve(
                 ReservationCreateCommand.from(new ReservationCreateRequest("mingu", LocalDate.parse("2099-04-05"), 1L, 1L)));
 
-        Assertions.assertThat(result.getReservation().getStatus()).isEqualTo(Status.WAITING);
-        Assertions.assertThat(result.getOrder()).isNull();
+        Assertions.assertThat(outcome).isInstanceOf(ReservationOutcome.Joined.class);
+        Assertions.assertThat(outcome.reservation().getStatus()).isEqualTo(Status.WAITING);
         verify(paymentOrderRepository, never()).save(any());
     }
 
