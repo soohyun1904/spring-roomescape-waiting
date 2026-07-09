@@ -42,10 +42,10 @@ public class TossPaymentGateway implements PaymentGateway {
             throw new PaymentFailedException("결제 승인 응답이 비어 있습니다.");
         }
         return new PaymentResult(
-                response.getPaymentKey(),
-                response.getOrderId(),
-                response.getTotalAmount(),
-                PaymentStatus.from(response.getStatus()));
+                response.paymentKey(),
+                response.orderId(),
+                response.totalAmount(),
+                PaymentStatus.from(response.status()));
     }
 
     private TossErrorResponse readError(org.springframework.http.client.ClientHttpResponse response) {

@@ -15,8 +15,8 @@ public class TossErrorMapper {
     }
 
     public static PaymentException toException(TossErrorResponse error) {
-        String code = error.getCode() != null ? error.getCode() : "";
-        String message = error.getMessage() != null ? error.getMessage() : "결제 승인에 실패했습니다.";
+        String code = error.code() != null ? error.code() : "";
+        String message = error.message() != null ? error.message() : "결제 승인에 실패했습니다.";
 
         return switch (code) {
             case "ALREADY_PROCESSED_PAYMENT" -> new PaymentAlreadyProcessedException(message);
