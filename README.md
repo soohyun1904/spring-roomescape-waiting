@@ -31,7 +31,9 @@ export TOSS_SECRET_KEY=test_gsk_docs_OaPz8L5KdmQXkzRz3y47BMw6
 
 ### 3. 프론트엔드 실행 — http://localhost:4173
 
-저장소 상위 디렉토리의 `frontend/`(React + Vite)를 사용합니다. 제공 프론트 이미지는 사용하지 않습니다.
+저장소 상위 디렉토리의 `frontend/`(React + Vite)를 사용합니다.
+
+**방법 A — 로컬 dev 서버 (개발 시):**
 
 ```bash
 cd ../frontend
@@ -40,6 +42,21 @@ npm run dev
 ```
 
 프론트 dev 서버가 `/api` 요청을 백엔드(`http://localhost:8080`)로 프록시합니다.
+
+**방법 B — Docker (한 번에):**
+
+```bash
+TOSS_SECRET_KEY=... TOSS_CLIENT_KEY=... docker-compose up
+```
+
+프론트는 결제 UI가 포함된 `dalsu1904/spring-roomescape-member-front:latest` 이미지로 뜨고,
+nginx가 `/api/*`를 backend 컨테이너로 프록시합니다. 프론트 코드를 수정했다면 이미지를 다시 빌드/푸시합니다:
+
+```bash
+cd ../frontend
+docker build -t dalsu1904/spring-roomescape-member-front:latest .
+docker push dalsu1904/spring-roomescape-member-front:latest
+```
 
 ### 4. 결제 흐름 확인
 

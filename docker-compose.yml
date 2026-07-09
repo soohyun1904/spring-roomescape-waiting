@@ -8,12 +8,13 @@ services:
       - TOSS_SECRET_KEY=${TOSS_SECRET_KEY:-}
       - TOSS_CLIENT_KEY=${TOSS_CLIENT_KEY:-}
 
-# 제공 프론트 이미지는 사용하지 않는다 — 저장소 상위의 frontend/(React)를 로컬에서 직접 실행한다. (README 참고)
-#  frontend:
-#    image: dalsu1904/spring-roomescape-member-front:latest
-#    ports:
-#      - "4173:4173"
-#    environment:
-#      - TZ=Asia/Seoul
-#    depends_on:
-#      - backend
+  # 저장소 상위 frontend/(React + 토스 결제 UI)를 빌드해 올린 이미지.
+  # nginx가 /api/* 를 backend:8080으로 프록시하므로 브라우저는 4173 단일 오리진만 본다.
+  frontend:
+    image: dalsu1904/spring-roomescape-member-front:latest
+    ports:
+      - "4173:4173"
+    environment:
+      - TZ=Asia/Seoul
+    depends_on:
+      - backend
