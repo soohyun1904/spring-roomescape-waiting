@@ -14,22 +14,18 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import roomescape.domain.RoomEscapeException;
 import roomescape.domain.payment.PaymentKeyConfigurationException;
 
+import static roomescape.common.DomainErrorHttpMapper.*;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     public static final String UNEXPECTED_ERROR = "예상치 못한 오류가 발생했습니다. 잠시 후 다시 시도해주세요.";
     public static final String DATABASE_ERROR = "데이터 베이스 관련 오류가 발생했습니다. 관리자에게 문의해주세요";
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    private final DomainErrorHttpMapper httpMapper;
-
-    public GlobalExceptionHandler(DomainErrorHttpMapper httpMapper) {
-        this.httpMapper = httpMapper;
-    }
-
     @ExceptionHandler(RoomEscapeException.class)
     public ProblemDetail roomEscapeExceptionHandle(RoomEscapeException e) {
         log.info("도메인 관련 오류가 발생했습니다.", e);
-        return ProblemDetail.forStatusAndDetail(httpMapper.statusOf(e.code()), e.getMessage());
+        return ProblemDetail.forStatusAndDetail(statusOf(e.code()), e.getMessage());
     }
 
     @ExceptionHandler(PaymentKeyConfigurationException.class)
@@ -37,7 +33,7 @@ public class GlobalExceptionHandler {
         // 사용자 잘못이 아닌 서버 측 결제 키 설정 오류 — 운영 알람 대상 (ERROR 레벨 로그)
         log.error("결제 API 키 설정 오류가 발생했습니다.", e);
         return ProblemDetail.forStatusAndDetail(
-                httpMapper.statusOf(e.code()), "결제 설정 오류가 발생했습니다. 관리자에게 문의해주세요.");
+                statusOf(e.code()), "결제 설정 오류가 발생했습니다. 관리자에게 문의해주세요.");
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

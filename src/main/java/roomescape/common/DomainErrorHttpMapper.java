@@ -4,9 +4,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import roomescape.domain.DomainErrorCode;
 
-@Component
 public class DomainErrorHttpMapper {
-    public HttpStatus statusOf(final DomainErrorCode code) {
+    public static HttpStatus statusOf(final DomainErrorCode code) {
         return switch (code) {
             case RESOURCE_NOT_FOUND,
                  PAYMENT_NOT_FOUND -> HttpStatus.NOT_FOUND;
