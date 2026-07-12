@@ -11,6 +11,8 @@ public interface PaymentOrderRepository {
 
     Optional<PaymentOrder> findByOrderId(String orderId);
 
+    Optional<PaymentOrder> findByReservationId(Long reservationId);
+
     void updatePaymentKey(Long id, String paymentKey);
 
     void deleteById(Long id);

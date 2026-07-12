@@ -55,5 +55,7 @@ CREATE TABLE payment_order
     created_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
     FOREIGN KEY (reservation_id) REFERENCES reservation (id) ON DELETE CASCADE,
-    CONSTRAINT uq_payment_order_order_id UNIQUE (order_id)
+    CONSTRAINT uq_payment_order_order_id UNIQUE (order_id),
+    -- 예약당 주문은 하나 — 결제 시작 API의 get-or-create 멱등성을 DB 차원에서도 보장
+    CONSTRAINT uq_payment_order_reservation UNIQUE (reservation_id)
 );

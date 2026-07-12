@@ -69,6 +69,39 @@ class PaymentServiceTest {
     }
 
     @Test
+    void 결제_시작시_주문이_없으면_새로_생성한다() {
+        given(reservationRepository.getById(10L)).willReturn(reservation(Status.PENDING_PAYMENT));
+        given(paymentOrderRepository.findByReservationId(10L)).willReturn(Optional.empty());
+        given(paymentOrderRepository.save(any())).willAnswer(invocation -> ((PaymentOrder) invocation.getArgument(0)).withId(1L));
+
+        PaymentOrder order = paymentService.createOrder(10L);
+
+        Assertions.assertThat(order.getAmount()).isEqualTo(10000L);
+        Assertions.assertThat(order.getOrderId()).matches("[a-zA-Z0-9_-]{6,64}");
+        Assertions.assertThat(order.getReservationId()).isEqualTo(10L);
+    }
+
+    @Test
+    void 결제_시작시_기존_주문이_있으면_재사용한다() {
+        given(reservationRepository.getById(10L)).willReturn(reservation(Status.PENDING_PAYMENT));
+        given(paymentOrderRepository.findByReservationId(10L)).willReturn(Optional.of(ORDER));
+
+        PaymentOrder order = paymentService.createOrder(10L);
+
+        Assertions.assertThat(order).isEqualTo(ORDER);
+        verify(paymentOrderRepository, never()).save(any());
+    }
+
+    @Test
+    void 결제_대기_상태가_아닌_예약은_결제를_시작할_수_없다() {
+        given(reservationRepository.getById(10L)).willReturn(reservation(Status.APPROVED));
+
+        Assertions.assertThatThrownBy(() -> paymentService.createOrder(10L))
+                .isInstanceOf(RoomEscapeException.class);
+        verify(paymentOrderRepository, never()).save(any());
+    }
+
+    @Test
     void 금액이_일치하지_않으면_예외가_발생하고_게이트웨이는_호출되지_않는다() {
         given(paymentOrderRepository.getByOrderId("order-abc123")).willReturn(ORDER);
 

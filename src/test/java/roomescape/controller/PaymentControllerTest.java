@@ -8,7 +8,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import roomescape.controller.dto.request.PaymentConfirmRequest;
+import roomescape.controller.dto.request.PaymentOrderCreateRequest;
 import roomescape.controller.dto.request.PaymentFailRequest;
+import roomescape.domain.payment.PaymentOrder;
 import roomescape.domain.payment.PaymentAmountMismatchException;
 import roomescape.domain.payment.PaymentKeyConfigurationException;
 import roomescape.domain.payment.PaymentRejectedException;
@@ -51,6 +53,28 @@ class PaymentControllerTest {
         mockMvc.perform(get("/payments/config"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.clientKey").value("test_ck_dummy"));
+    }
+
+    @Test
+    void 결제_시작시_주문_정보를_반환한다() throws Exception {
+        given(paymentService.createOrder(1L))
+                .willReturn(PaymentOrder.load(1L, "order-abc123", 1L, 35000L, null));
+
+        mockMvc.perform(post("/payments/orders")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new PaymentOrderCreateRequest(1L))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.orderId").value("order-abc123"))
+                .andExpect(jsonPath("$.amount").value(35000))
+                .andExpect(jsonPath("$.reservationId").value(1));
+    }
+
+    @Test
+    void 결제_시작시_reservationId가_없으면_400을_반환한다() throws Exception {
+        mockMvc.perform(post("/payments/orders")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new PaymentOrderCreateRequest(null))))
+                .andExpect(status().isBadRequest());
     }
 
     @Test

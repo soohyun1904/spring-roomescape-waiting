@@ -51,6 +51,14 @@ public class JdbcPaymentOrderRepository implements PaymentOrderRepository {
         return result.stream().findFirst();
     }
 
+    public Optional<PaymentOrder> findByReservationId(Long reservationId) {
+        List<PaymentOrder> result = jdbcTemplate.query(
+                BASE_SQL + " WHERE reservation_id = :reservationId",
+                new MapSqlParameterSource("reservationId", reservationId),
+                ROW_MAPPER);
+        return result.stream().findFirst();
+    }
+
     public void updatePaymentKey(Long id, String paymentKey) {
         MapSqlParameterSource params = new MapSqlParameterSource("id", id)
                 .addValue("paymentKey", paymentKey);

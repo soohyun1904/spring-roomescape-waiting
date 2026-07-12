@@ -17,7 +17,6 @@ import roomescape.domain.reservation.Reservations;
 import roomescape.domain.reservation.Slot;
 import roomescape.domain.theme.Theme;
 import roomescape.service.ReservationService;
-import roomescape.service.ReservationOutcome;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -62,7 +61,7 @@ class ReservationControllerTest {
     @Test
     void 예약_생성_성공시_201을_반환한다() throws Exception {
         ReservationCreateRequest request = new ReservationCreateRequest("zeze", LocalDate.of(2099, 1, 1), 1L, 1L);
-        given(reservationService.reserve(any())).willReturn(new ReservationOutcome.Joined(approvedReservation()));
+        given(reservationService.reserve(any())).willReturn(approvedReservation());
 
         mockMvc.perform(post("/reservations")
                         .contentType(MediaType.APPLICATION_JSON)

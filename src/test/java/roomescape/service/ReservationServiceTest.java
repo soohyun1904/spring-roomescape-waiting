@@ -11,8 +11,6 @@ import roomescape.controller.dto.request.ReservationCreateRequest;
 import roomescape.controller.dto.request.ReservationUpdateRequest;
 import roomescape.domain.DomainErrorCode;
 import roomescape.domain.RoomEscapeException;
-import roomescape.domain.payment.PaymentOrder;
-import roomescape.domain.payment.PaymentOrderRepository;
 import roomescape.domain.reservation.Reservation;
 import roomescape.domain.reservation.ReservationRepository;
 import roomescape.domain.reservation.ReservationTime;
@@ -58,8 +56,6 @@ class ReservationServiceTest {
     private ReservationAssembler assembler;
     @Mock
     private ReservationRepository reservationRepository;
-    @Mock
-    private PaymentOrderRepository paymentOrderRepository;
     @InjectMocks
     private ReservationService reservationService;
 
@@ -111,37 +107,29 @@ class ReservationServiceTest {
     }
 
     @Test
-    void 빈_슬롯_예약시_결제_대기_상태로_저장되고_주문이_생성된다() {
+    void 빈_슬롯_예약시_결제_대기_상태로_저장된다() {
         Reservation assembled = Reservation.create(NAME, DUMMY_SLOT);
         given(assembler.from(any(ReservationCreateCommand.class))).willReturn(assembled);
         given(reservationRepository.findBySlotId(1L)).willReturn(new Reservations(List.of()));
         given(reservationRepository.save(any())).willAnswer(invocation -> ((Reservation) invocation.getArgument(0)).withId(10L));
-        given(paymentOrderRepository.save(any())).willAnswer(invocation -> ((PaymentOrder) invocation.getArgument(0)).withId(1L));
 
-        ReservationOutcome outcome = reservationService.reserve(
+        Reservation reserved = reservationService.reserve(
                 ReservationCreateCommand.from(new ReservationCreateRequest("zeze", LocalDate.parse("2099-04-05"), 1L, 1L)));
 
-        Assertions.assertThat(outcome).isInstanceOf(ReservationOutcome.PaymentRequired.class);
-        ReservationOutcome.PaymentRequired required = (ReservationOutcome.PaymentRequired) outcome;
-        Assertions.assertThat(required.reservation().getStatus()).isEqualTo(Status.PENDING_PAYMENT);
-        Assertions.assertThat(required.order().getAmount()).isEqualTo(10000L);
-        Assertions.assertThat(required.order().getOrderId()).matches("[a-zA-Z0-9_-]{6,64}");
-        Assertions.assertThat(required.order().getReservationId()).isEqualTo(10L);
+        Assertions.assertThat(reserved.getStatus()).isEqualTo(Status.PENDING_PAYMENT);
     }
 
     @Test
-    void 슬롯에_선점자가_있으면_대기_상태로_저장되고_주문은_생성되지_않는다() {
+    void 슬롯에_선점자가_있으면_대기_상태로_저장된다() {
         Reservation assembled = Reservation.create("mingu", DUMMY_SLOT);
         given(assembler.from(any(ReservationCreateCommand.class))).willReturn(assembled);
         given(reservationRepository.findBySlotId(1L)).willReturn(DUMMIES);
         given(reservationRepository.save(any())).willAnswer(invocation -> ((Reservation) invocation.getArgument(0)).withId(11L));
 
-        ReservationOutcome outcome = reservationService.reserve(
+        Reservation reserved = reservationService.reserve(
                 ReservationCreateCommand.from(new ReservationCreateRequest("mingu", LocalDate.parse("2099-04-05"), 1L, 1L)));
 
-        Assertions.assertThat(outcome).isInstanceOf(ReservationOutcome.Joined.class);
-        Assertions.assertThat(outcome.reservation().getStatus()).isEqualTo(Status.WAITING);
-        verify(paymentOrderRepository, never()).save(any());
+        Assertions.assertThat(reserved.getStatus()).isEqualTo(Status.WAITING);
     }
 
     @Test

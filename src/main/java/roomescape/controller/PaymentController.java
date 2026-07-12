@@ -9,8 +9,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import roomescape.controller.dto.request.PaymentConfirmRequest;
 import roomescape.controller.dto.request.PaymentFailRequest;
+import roomescape.controller.dto.request.PaymentOrderCreateRequest;
 import roomescape.controller.dto.response.PaymentConfigResponse;
+import roomescape.controller.dto.response.PaymentOrderResponse;
 import roomescape.controller.dto.response.ReservationResponse;
+import roomescape.domain.payment.PaymentOrder;
 import roomescape.domain.reservation.Reservation;
 import roomescape.service.PaymentConfirmCommand;
 import roomescape.service.PaymentService;
@@ -31,6 +34,12 @@ public class PaymentController {
     @GetMapping("/payments/config")
     public ResponseEntity<PaymentConfigResponse> config() {
         return ResponseEntity.ok(new PaymentConfigResponse(clientKey));
+    }
+
+    @PostMapping("/payments/orders")
+    public ResponseEntity<PaymentOrderResponse> createOrder(@Valid @RequestBody PaymentOrderCreateRequest request) {
+        PaymentOrder order = paymentService.createOrder(request.getReservationId());
+        return ResponseEntity.ok(PaymentOrderResponse.toDto(order));
     }
 
     @PostMapping("/payments/confirm")
