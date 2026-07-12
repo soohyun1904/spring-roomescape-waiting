@@ -1,0 +1,7 @@
+# 로컬 빌드 산출물/캐시가 이미지 빌드에 끼어들면
+# 컨테이너 안 gradle이 bootJar를 UP-TO-DATE로 판단해 옛날 jar를 쓸 수 있다.
+.gradle
+build
+out
+.git
+.idea
